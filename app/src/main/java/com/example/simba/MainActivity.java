@@ -1,7 +1,12 @@
 package com.example.simba;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,8 +21,8 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private CategoryAdapter adapter;
     private CategoryRepository categoryRepository;
+    private MenuHandler menuHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +36,20 @@ public class MainActivity extends AppCompatActivity {
         categoryRepository.open();
 
         fetchCategoriesFromApi();
+        menuHandler = new MenuHandler(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Підключаємо меню через MenuHandler
+        menuHandler.inflateMenu(menu, getMenuInflater());
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Обробляємо натискання пунктів меню через MenuHandler
+        return menuHandler.handleMenuItemClick(item) || super.onOptionsItemSelected(item);
     }
 
     private void fetchCategoriesFromApi() {
@@ -63,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void displayCategories() {
         List<Category> categories = categoryRepository.getAllCategories();
-        adapter = new CategoryAdapter(categories);
+        CategoryAdapter adapter = new CategoryAdapter(categories);
         recyclerView.setAdapter(adapter);
     }
 
