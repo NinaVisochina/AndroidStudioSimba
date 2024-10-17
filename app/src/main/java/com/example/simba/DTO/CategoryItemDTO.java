@@ -1,11 +1,10 @@
-package com.example.simba;
+package com.example.simba.DTO;
 
-public class Category {
+public class CategoryItemDTO {
     private int id;
     private String name;
     private String imagePath;
 
-    // Геттери і сеттери
     public int getId() {
         return id;
     }
@@ -30,4 +29,3 @@ public class Category {
         this.imagePath = imagePath;
     }
 }
-
