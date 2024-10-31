@@ -1,5 +1,6 @@
 package com.example.simba.category;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,8 +18,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.simba.BaseActivity;
 import com.example.simba.MainActivity;
-import android.Manifest;
 import com.example.simba.R;
+import com.example.simba.constants.Urls;
 import com.example.simba.DTO.CategoryItemDTO;
 import com.example.simba.services.ApplicationNetwork;
 import com.google.android.material.textfield.TextInputLayout;
@@ -34,54 +35,87 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CategoryCreateActivity extends BaseActivity {
+public class CategoryEditActivity extends BaseActivity {
 
+    int id=0;
     private static final int PICK_IMAGE_REQUEST = 1;
     private String filePath;
-    TextInputLayout tlCategoryName;
-    TextInputLayout tlCategoryDescription;
-    private ImageView ivSelectImage;
+    TextInputLayout tlCategoryNameEdit;
+    TextInputLayout tlCategoryDescriptionEdit;
+    private ImageView ivSelectImageEdit;
 
-    private final String TAG="CategoryCreateActivity";
-    public  boolean isStoragePermissionGranted() {
+    private final String TAG="CategoryEditActivity";
+    public boolean isStoragePermissionGranted() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
-                Log.v(TAG,"Permission is granted");
+                Log.v(TAG, "Permission is granted");
                 return true;
             } else {
 
-                Log.v(TAG,"Permission is revoked");
+                Log.v(TAG, "Permission is revoked");
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
                 return false;
             }
-        }
-        else { //permission is automatically granted on sdk<23 upon installation
-            Log.v(TAG,"Permission is granted");
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v(TAG, "Permission is granted");
             return true;
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category_create);
+        setContentView(R.layout.activity_category_edit);
+
+        Bundle b = getIntent().getExtras();
+        if(b!=null)
+            id=b.getInt("id");
+        initData();
+    }
+
+    private void initData() {
 
         isStoragePermissionGranted();
 
-        tlCategoryName = findViewById(R.id.tlCategoryName);
-        tlCategoryDescription = findViewById(R.id.tlCategoryDescription);
-        ivSelectImage = findViewById(R.id.ivSelectImage);
-        String url = "http://malyska123.somee.com/images/noimage.jpg";
-        Glide
-                .with(this)
-                .load(url)
-                .apply(new RequestOptions().override(300))
-                .into(ivSelectImage);
+        tlCategoryNameEdit = findViewById(R.id.tlCategoryNameEdit);
+        tlCategoryDescriptionEdit = findViewById(R.id.tlCategoryDescriptionEdit);
+        ivSelectImageEdit = findViewById(R.id.ivSelectImageEdit);
+
+        ApplicationNetwork.getInstance()
+                .getCategoriesApi()
+                .getById(id)
+                .enqueue(new Callback<CategoryItemDTO>() {
+                    @Override
+                    public void onResponse(Call<CategoryItemDTO> call, Response<CategoryItemDTO> response) {
+                        if(response.isSuccessful()) {
+                            CategoryItemDTO item = response.body();
+                            tlCategoryNameEdit.getEditText().setText(item.getName());
+                            tlCategoryDescriptionEdit.getEditText().setText(item.getDescription());
+                            String image = item.getImagePath();
+
+                            String url = "https://img.freepik.com/free-vector/man-saying-no-concept-illustration_114360-19591.jpg";
+                            if(image!=null) {
+                                url = Urls.BASE+image;
+                            }
+                            Glide
+                                    .with(CategoryEditActivity.this)
+                                    .load(url)
+                                    .apply(new RequestOptions().override(300))
+                                    .into(ivSelectImageEdit);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<CategoryItemDTO> call, Throwable throwable) {
+
+                    }
+                });
 
     }
 
-    public void openGallery(View view) {
+    public void openGalleryEdit(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
@@ -98,7 +132,7 @@ public class CategoryCreateActivity extends BaseActivity {
                     .with(this)
                     .load(uri)
                     .apply(new RequestOptions().override(300))
-                    .into(ivSelectImage);
+                    .into(ivSelectImageEdit);
 
             // If you want to get the file path from the URI, you can use the following code:
             filePath = getPathFromURI(uri);
@@ -119,12 +153,13 @@ public class CategoryCreateActivity extends BaseActivity {
         return null;
     }
 
-    public void onClickCreateCategory(View view) {
+    public void onClickEditCategory(View view) {
         try {
-            String name = tlCategoryName.getEditText().getText().toString().trim();
-            String description = tlCategoryDescription.getEditText().getText().toString().trim();
+            String name = tlCategoryNameEdit.getEditText().getText().toString().trim();
+            String description = tlCategoryDescriptionEdit.getEditText().getText().toString().trim();
 
             Map<String, RequestBody> params = new HashMap<>();
+            params.put("id", RequestBody.create(MediaType.parse("text/plain"), String.valueOf(id)));
             params.put("name", RequestBody.create(MediaType.parse("text/plain"), name));
             params.put("description", RequestBody.create(MediaType.parse("text/plain"), description));
 
@@ -137,13 +172,13 @@ public class CategoryCreateActivity extends BaseActivity {
 
             ApplicationNetwork.getInstance()
                     .getCategoriesApi()
-                    .create(params, imagePart)
+                    .edit(params, imagePart)
                     .enqueue(new Callback<CategoryItemDTO>() {
                         @Override
                         public void onResponse(Call<CategoryItemDTO> call, Response<CategoryItemDTO> response) {
                             if(response.isSuccessful())
                             {
-                                Intent intent = new Intent(CategoryCreateActivity.this, MainActivity.class);
+                                Intent intent = new Intent(CategoryEditActivity.this, MainActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
@@ -159,4 +194,6 @@ public class CategoryCreateActivity extends BaseActivity {
             Log.e("--CategoryCreateActivity--", "Problem create "+ ex.getMessage());
         }
     }
+
+
 }

@@ -10,27 +10,28 @@
         android:layout_height="match_parent"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
-        tools:context=".category.CategoryCreateActivity">
+        tools:context=".category.CategoryEditActivity">
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvTitleEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="44dp"
-            android:text="Додати категорію"
+            android:text="Зміна категорії"
             android:textSize="25dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tlCategoryName"
+            android:id="@+id/tlCategoryNameEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="Назва"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle">
+            app:layout_constraintTop_toBottomOf="@id/tvTitleEdit">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -40,12 +41,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tlCategoryDescription"
+            android:id="@+id/tlCategoryDescriptionEdit"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="Опис"
-            app:layout_constraintTop_toBottomOf="@+id/tlCategoryName">
+            app:layout_constraintTop_toBottomOf="@+id/tlCategoryNameEdit">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -57,39 +58,39 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
-            android:id="@+id/ivSelectImage"
+            android:id="@+id/ivSelectImageEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="20dp"
             android:minHeight="150dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tlCategoryDescription"
+            app:layout_constraintTop_toBottomOf="@+id/tlCategoryDescriptionEdit"
             tools:srcCompat="@tools:sample/avatars" />
 
 
         <Button
-            android:id="@+id/btnSelectImage"
+            android:id="@+id/btnSelectImageEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="64dp"
-            android:onClick="openGallery"
+            android:onClick="openGalleryEdit"
             android:text="Обрати фото"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ivSelectImage"
-            app:layout_constraintTop_toBottomOf="@+id/tlCategoryDescription" />
+            app:layout_constraintStart_toEndOf="@+id/ivSelectImageEdit"
+            app:layout_constraintTop_toBottomOf="@+id/tlCategoryDescriptionEdit" />
 
 
         <Button
-            android:id="@+id/btnCategoryCreate"
+            android:id="@+id/btnCategoryEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="34dp"
-            android:onClick="onClickCreateCategory"
-            android:text="Додати"
+            android:onClick="onClickEditCategory"
+            android:text="Зберегти"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivSelectImage" />
+            app:layout_constraintTop_toBottomOf="@+id/ivSelectImageEdit" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
